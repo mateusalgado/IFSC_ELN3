@@ -2,7 +2,7 @@
 
 **Curso:** Tecnologia em Eletrônica Industrial / Engenharia Eletrônica  
 **Unidade:** Eletrônica III  
-**Professor:** Luis Carlos Martinhago Schlichting  
+**Professor:** Luis Carlos Martinhago Schlichting
 
 ---
 
@@ -12,28 +12,30 @@ Analisar, simular e montar circuitos multivibradores baseados em amplificadores 
 
 ---
 
-## 2. Circuito — Questão 1
+## 2. Questão 1 — Circuito Multivibrador LM324
 
-> 📷 **[INSERIR AQUI: Imagem do esquemático do Proteus — Figura 1]**
+### 2.1 Esquemático
 
-### 2.1 Parâmetros do circuito
+![Esquemático — Proteus](imgs/simulacao/q1_esquematico.png)
 
-| Componente | Valor    | Função                                      |
-|------------|----------|---------------------------------------------|
-| R1         | 100 kΩ   | Converte Vco em corrente para o integrador  |
-| R2         | 51 kΩ    | Referência da entrada (+) de U1:B           |
-| R3         | 51 kΩ    | Divisor de histerese — comparador U1:A      |
-| R4         | 51 kΩ    | Divisor da entrada (+) de U1:B              |
-| R5         | 10 kΩ    | Limita corrente no reset do capacitor       |
-| R6         | 100 kΩ   | Divisor de histerese — comparador U1:A      |
-| R7         | 50 kΩ    | Limita corrente de base do transistor Q1    |
-| C1         | 0,05 µF  | Capacitor integrador — gera a rampa         |
-| Q1         | BC547    | Chave de reset de C1 (NPN)                  |
-| SW1        | SW-SPST  | Habilita/desabilita o reset manual          |
-| V1         | 10 V     | Alimentação de referência do integrador     |
-| V2         | 2,5 V    | Tensão de referência central do comparador  |
-| Vco        | 6 V      | Tensão de controle (constante — Questão 1)  |
-| U1:A, U1:B | LM324   | Amplificadores operacionais                 |
+### 2.2 Parâmetros do circuito
+
+| Componente | Valor | Função |
+|------------|-------|--------|
+| R1 | 100 kΩ | Converte Vco em corrente para o integrador |
+| R2 | 51 kΩ | Divisor da entrada (+) de U1:B — ligado ao GND |
+| R3 | 51 kΩ | Divisor de histerese do comparador U1:A |
+| R4 | 51 kΩ | Divisor da entrada (+) de U1:B — ligado a Vco |
+| R5 | 10 kΩ | Resistor de base de Q1 (vem da Saída 1) |
+| R6 | 100 kΩ | Divisor de histerese do comparador U1:A |
+| R7 | 50 kΩ | Liga coletor de Q1 ao nó V⁻ de U1:B |
+| C1 | 0,05 µF | Capacitor integrador — gera a rampa |
+| Q1 | BC547 | Transistor NPN — puxa V⁻ de U1:B para GND via R7 |
+| SW1 | SW-SPST | Impulso inicial para desencadear a oscilação |
+| V1 | 10 V | Alimentação do LM324 (pino 4) |
+| V2 | 2,5 V | Referência central do comparador U1:A |
+| Vco | 6 V | Tensão de controle da frequência |
+| U1:A, U1:B | LM324 | Amplificadores operacionais |
 
 ---
 
@@ -41,231 +43,299 @@ Analisar, simular e montar circuitos multivibradores baseados em amplificadores 
 
 ### 3.1 Diagrama de blocos
 
-O circuito é composto por **quatro blocos funcionais** em malha fechada:
+![Diagrama de blocos do multivibrador](imgs/geradas/diagrama_blocos.png)
 
-```
-Vco ──► [ Bloco 1: Entrada + R1 ] ──► [ Bloco 2: Integrador U1:B ] ──► Saída 2 (rampa)
-                                               │                              │
-                                               │◄── Reset (Q1 satura) ◄──────┤
-                                                                              ▼
-                                         [ Bloco 4: Chave Q1 ] ◄─── [ Bloco 3: Comparador U1:A ] ──► Saída 1 (quadrada)
-```
-
-### 3.2 Função de cada bloco e componente
-
-#### Bloco 1 — Entrada Vco (R1, R4)
-
-**R1 (100 kΩ)** converte a tensão Vco em uma corrente constante que alimenta o capacitor C1 do integrador. Quanto maior Vco, maior a corrente e mais rápida a rampa — o que aumenta diretamente a frequência de oscilação.
-
-**R4 (51 kΩ)** faz parte do divisor resistivo que fixa o potencial na entrada não-inversora (+) de U1:B, determinando o ponto de equilíbrio do integrador.
-
-#### Bloco 2 — Integrador U1:B (C1, R2, V1)
-
-U1:B está configurado como **integrador inversor**. O capacitor **C1 (0,05 µF)** no caminho de realimentação acumula a carga proveniente de R1 e produz uma **rampa linear** na Saída 2. A equação da tensão de saída do integrador é:
-
-$$V_{out}(t) = -\frac{1}{R_1 \cdot C_1} \int V_{co} \, dt = -\frac{V_{co}}{R_1 C_1} \cdot t$$
-
-**V1 (10 V)** e **R2 (51 kΩ)** fixam o potencial na entrada (+) de U1:B, garantindo operação no ponto de trabalho correto com alimentação única.
-
-#### Bloco 3 — Comparador com Histerese U1:A (R3, R6, V2)
-
-U1:A atua como **Schmitt Trigger** (comparador com histerese). Ele compara a rampa da Saída 2 com o limiar definido pelo divisor resistivo composto por **R3 (51 kΩ)** e **R6 (100 kΩ)** a partir de **V2 (2,5 V)** e da própria saída de U1:A.
-
-- Quando a rampa atinge **V_TH** → Saída 1 comuta para nível baixo
-- Quando a rampa cai até **V_TL** → Saída 1 comuta para nível alto
-
-A histerese previne oscilações espúrias e define os limites da excursão da rampa.
-
-#### Bloco 4 — Chave de Reset Q1 (R5, R7, SW1)
-
-O transistor **Q1 (BC547)** é acionado pela Saída 1 de U1:A através de **R7 (50 kΩ)**. Quando a Saída 1 vai para nível baixo, a base de Q1 perde polarização, Q1 corta e C1 carrega normalmente. Quando a Saída 1 vai para nível alto, Q1 satura e descarrega C1 rapidamente através de **R5 (10 kΩ)**, resetando a rampa quase instantaneamente.
-
-**SW1** permite interromper esse caminho de reset manualmente para observar o comportamento do integrador isolado.
+O circuito opera como **oscilador de relaxação** em malha fechada: o integrador (U1:B) gera a rampa, o comparador (U1:A) detecta os limiares e gera a onda quadrada, e Q1 reseta o integrador a cada ciclo.
 
 ---
 
-### 3.3 Etapas de carga e descarga
+### 3.2 Bloco 1 — Integrador U1:B
 
-O ciclo de oscilação se divide em quatro etapas:
+![Análise do integrador U1:B](imgs/geradas/bloco1_integrador.png)
 
-#### Etapa 1 — Carga de C1 (rampa sobe)
+U1:B está configurado como **integrador inversor** — C1 no caminho de realimentação. Com resistor no feedback o AmpOp seria um amplificador simples; com capacitor, a saída é a integral da entrada no tempo.
 
-Vco (6 V) força corrente por R1 (100 kΩ) para C1. O integrador U1:B acumula carga e a Saída 2 sobe linearmente. Neste momento, Saída 1 está em nível alto e Q1 está **cortado** (SW1 fechada mas sem tensão de base suficiente).
+R4 (51 kΩ) vem de Vco e R2 (51 kΩ) vai para GND, formando um divisor **simétrico** na entrada (+) de U1:B. V1 (10 V) alimenta apenas o pino 4 do LM324, não entra no divisor.
 
-$$\text{Slope} = \frac{V_{co}}{R_1 \cdot C_1} = \frac{6}{100 \times 10^3 \times 0{,}05 \times 10^{-6}} = 1200 \; \text{V/s}$$
+$$V^+ = V_{co} \cdot \frac{R_2}{R_2 + R_4} = \frac{V_{co}}{2} = \frac{6}{2} = 3{,}0 \text{ V}$$
 
-#### Etapa 2 — Disparo em V_TH
+Pelo curto-circuito virtual, $V^- = V^+ = 3{,}0$ V. A corrente em R1 é:
 
-A rampa atinge o limiar superior V_TH da entrada (+) de U1:A. O comparador comuta: **Saída 1 vai de alto para baixo**. Este evento aciona a base de Q1 via R7.
+$$I = \frac{V_{co} - V^+}{R_1} = \frac{6 - 3}{100k} = 30 \ \mu\text{A}$$
 
-#### Etapa 3 — Reset de C1 (descarga rápida)
+Essa corrente constante em C1 produz rampa linear com inclinação:
 
-Q1 satura e descarrega C1 através de R5 (10 kΩ). A descarga é muito mais rápida que a carga — a rampa cai quase verticalmente de V_TH para V_TL. A Saída 1 permanece em nível baixo durante este instante.
+$$\frac{dV_{out}}{dt} = \frac{I}{C_1} = \frac{30 \ \mu}{0{,}05 \ \mu} = 600 \text{ V/s} = 0{,}6 \text{ V/ms}$$
 
-#### Etapa 4 — Disparo em V_TL e reinício
+---
 
-Assim que a rampa cai até V_TL, U1:A comuta novamente: **Saída 1 vai para nível alto**, Q1 corta, e C1 começa a carregar de novo — iniciando um novo ciclo.
+### 3.3 Bloco 2 — Comparador U1:A (Schmitt Trigger)
 
-> 📷 **[INSERIR AQUI: Print do osciloscópio virtual do Proteus — Saídas 1 e 2 simultâneas]**
+![Análise do comparador com histerese U1:A](imgs/geradas/bloco2_comparador.png)
+
+U1:A é um **Schmitt Trigger** — comparador com realimentação positiva via R3 e R6. Dois limiares distintos são criados: quando a rampa (Saída 2) sobe e cruza $V_{TH}$, a Saída 1 vai a nível baixo; quando desce e cruza $V_{TL}$, volta a nível alto.
+
+Pela superposição na entrada (+) de U1:A:
+
+$$V_+ = V_2 \cdot \frac{R_6}{R_3 + R_6} + V_{out1} \cdot \frac{R_3}{R_3 + R_6}$$
+
+---
+
+### 3.4 Bloco 3 — Chave Q1 e análise por estados
+
+A chave Q1 não descarrega C1 diretamente — ela **altera a corrente líquida no nó V⁻ de U1:B**, invertendo o sentido da integração. Para entender isso, analisamos o circuito em quatro estados.
+
+![Análise de estados — ciclo de carga e descarga](imgs/geradas/analise_estados_ciclo.png)
+
+#### Estado 1 — Carga (Q1 cortado)
+
+Com Q1 cortado, o nó V⁻ de U1:B está em curto virtual com V⁺ = 3 V. A única corrente que chega ao nó vem de R1:
+
+$$I_{carga} = \frac{V_{co} - V^+}{R_1} = \frac{6 - 3}{100k} = 30 \ \mu\text{A}$$
+
+Essa corrente carrega C1, fazendo a **Saída 2 subir**:
+
+$$\frac{dV_{out}}{dt} = +\frac{I_{carga}}{C_1} = +600 \text{ V/s}$$
+
+Saída 1 permanece em nível baixo (Vsat_lo = 0 V) — a base de Q1 não recebe tensão suficiente via R5.
+
+#### Estado 2 — Disparo em V_TH
+
+Quando a Saída 2 atinge $V_{TH}$, U1:A comuta: Saída 1 vai a nível alto ($V_{sat+}$ ≈ 8,5 V). Essa tensão chega à base de Q1 via R5 (10 kΩ) e o satura.
+
+#### Estado 3 — Descarga (Q1 saturado)
+
+Com Q1 saturado, o coletor vai a ≈ 0 V, e R7 (50 kΩ) passa a **drenar** corrente do nó V⁻:
+
+$$I_{R7} = \frac{V^+}{R_7} = \frac{3}{50k} = 60 \ \mu\text{A}$$
+
+R1 continua fornecendo 30 µA, mas R7 drena 60 µA — o déficit de 30 µA é suprido pelo próprio capacitor, fazendo a **Saída 2 descer**:
+
+$$\frac{dV_{out}}{dt} = -\frac{I_{R7} - I_{carga}}{C_1} = -\frac{60 - 30}{C_1} \cdot 10^{-6} = -600 \text{ V/s}$$
+
+A taxa de descarga é **idêntica em módulo** à taxa de carga — o que explica por que a Saída 2 é uma **onda triangular simétrica**, e não uma rampa com reset rápido.
+
+#### Estado 4 — Disparo em V_TL
+
+Quando a Saída 2 atinge $V_{TL}$, U1:A comuta de volta: Saída 1 vai a nível baixo, Q1 corta, e o ciclo recomeça no Estado 1.
+
+| Estado | Q1 | I líquida em C1 | Saída 2 | Saída 1 |
+|--------|----|------------------|---------|---------|
+| ① Carga | cortado | +30 µA | sobe | 0 V |
+| ② Disparo V_TH | — | — | em V_TH | 0 → 8,5 V |
+| ③ Descarga | saturado | −30 µA | desce | 8,5 V |
+| ④ Disparo V_TL | — | — | em V_TL | 8,5 → 0 V |
 
 ---
 
 ## 4. Limiares de Transição
 
-### 4.1 Dedução genérica
+### 4.1 Equações genéricas
 
-O limiar de comutação de U1:A é determinado pela tensão na sua entrada (+), formada pelo divisor R3–R6 entre V2 e a própria Saída 1.
+$$V_{TH} = V_2 \cdot \frac{R_6}{R_3 + R_6} + V_{sat+} \cdot \frac{R_3}{R_3 + R_6}$$
 
-Pela superposição:
-
-$$V_+ = V_2 \cdot \frac{R_6}{R_3 + R_6} + V_{out1} \cdot \frac{R_3}{R_3 + R_6}$$
-
-O comparador comuta quando $V_{-} = V_+$, ou seja, quando a Saída 2 (rampa) atinge $V_+$.
-
-**Limiar superior V_TH** — ocorre quando Saída 1 = V_sat_hi:
-
-$$\boxed{V_{TH} = V_2 \cdot \frac{R_6}{R_3 + R_6} + V_{sat+} \cdot \frac{R_3}{R_3 + R_6}}$$
-
-**Limiar inferior V_TL** — ocorre quando Saída 1 = V_sat_lo:
-
-$$\boxed{V_{TL} = V_2 \cdot \frac{R_6}{R_3 + R_6} + V_{sat-} \cdot \frac{R_3}{R_3 + R_6}}$$
+$$V_{TL} = V_2 \cdot \frac{R_6}{R_3 + R_6} + V_{sat-} \cdot \frac{R_3}{R_3 + R_6}$$
 
 ### 4.2 Cálculo numérico
 
-O LM324 operando com alimentação de V1 = 10 V (single supply):
-- $V_{sat+} \approx V_1 - 1{,}5 = 8{,}5 \; \text{V}$
-- $V_{sat-} \approx 0 \; \text{V}$
+LM324 com alimentação única V1 = 10 V: $V_{sat+} \approx 8{,}5$ V e $V_{sat-} \approx 0$ V
 
-$$V_{TH} = 2{,}5 \cdot \frac{100k}{51k + 100k} + 8{,}5 \cdot \frac{51k}{51k + 100k}$$
+$$V_{TH} = 2{,}5 \cdot \frac{100k}{151k} + 8{,}5 \cdot \frac{51k}{151k} = 1{,}66 + 2{,}87 = 4{,}53 \text{ V}$$
 
-$$V_{TH} = 2{,}5 \times 0{,}6623 + 8{,}5 \times 0{,}3377 = 1{,}6556 + 2{,}8709 = \mathbf{4{,}53 \; V}$$
+$$V_{TL} = 2{,}5 \cdot \frac{100k}{151k} + 0 = 1{,}66 \text{ V}$$
 
-$$V_{TL} = 2{,}5 \cdot \frac{100k}{151k} + 0 \cdot \frac{51k}{151k} = \mathbf{1{,}66 \; V}$$
+$$\Delta V = V_{TH} - V_{TL} = 2{,}87 \text{ V}$$
 
-$$\Delta V = V_{TH} - V_{TL} = 4{,}53 - 1{,}66 = \mathbf{2{,}87 \; V}$$
+### 4.3 Comparação — Limiares
 
-### 4.3 Tabela de comparação — Limiares
+| Grandeza | Teórico | Simulado | Montagem | Desvio T×S |
+|----------|:-------:|:--------:|:--------:|:----------:|
+| V_TH | 4,53 V | 4,68 V | ___ | +3,4% |
+| V_TL | 1,66 V | 1,65 V | ___ | −0,3% |
+| ΔV | 2,87 V | 3,03 V | ___ | +5,6% |
 
-| Grandeza     | Valor Teórico | Valor Simulado (Proteus) | Desvio (%) |
-|--------------|:-------------:|:------------------------:|:----------:|
-| V_TH         | 4,53 V        | _____                    | _____      |
-| V_TL         | 1,66 V        | _____                    | _____      |
-| ΔV (histerese)| 2,87 V       | _____                    | _____      |
+![Cursores medindo V_TH e V_TL — Proteus](imgs/simulacao/q1_cursor_vth_vtl.png)
 
-> 📷 **[INSERIR AQUI: Print do cursor do osciloscópio medindo VTH e VTL no Proteus]**
+*Cursor 1: V_TH = 4,68 V · Cursor 2: V_TL = 1,65 V*
 
 ---
 
 ## 5. Equação da Frequência
 
-### 5.1 Dedução genérica
+### 5.1 Equações genéricas
 
-O período de oscilação é determinado pelo tempo que C1 leva para carregar de V_TL até V_TH com a corrente fornecida por Vco através de R1.
+O período é a soma do tempo de carga (Q1 cortado) e do tempo de descarga (Q1 saturado):
 
-A corrente de carga é constante:
+$$T = T_{carga} + T_{descarga}$$
 
-$$I = \frac{V_{co}}{R_1}$$
+A corrente de carga, com $V^+ = V_{co} \cdot \dfrac{R_2}{R_2+R_4} = V_{co}/2$ (pois R2 = R4):
 
-A tensão no capacitor cresce linearmente:
+$$I_{carga} = \frac{V_{co} - V^+}{R_1} = \frac{V_{co}}{2 R_1}$$
 
-$$\Delta V = \frac{I \cdot T}{C_1} = \frac{V_{co} \cdot T}{R_1 \cdot C_1}$$
+A corrente de descarga, quando Q1 satura e R7 drena o nó V⁻:
 
-Isolando o período T (desprezando o tempo de reset, que é muito menor):
+$$I_{descarga} = \left|\frac{V^+}{R_7} - I_{carga}\right| = \left|\frac{V_{co}}{2 R_7} - \frac{V_{co}}{2 R_1}\right|$$
 
-$$T = \frac{(V_{TH} - V_{TL}) \cdot R_1 \cdot C_1}{V_{co}}$$
+$$T_{carga} = \frac{\Delta V \cdot C_1}{I_{carga}} \qquad T_{descarga} = \frac{\Delta V \cdot C_1}{I_{descarga}}$$
 
-Portanto, a frequência é:
-
-$$\boxed{f = \frac{V_{co}}{(V_{TH} - V_{TL}) \cdot R_1 \cdot C_1}}$$
-
-Esta equação mostra que **f é diretamente proporcional a Vco** — confirmando o comportamento de VCO (Voltage Controlled Oscillator).
+$$f = \frac{1}{T_{carga} + T_{descarga}}$$
 
 ### 5.2 Cálculo numérico (Vco = 6 V)
 
-$$f = \frac{6}{2{,}87 \times 100 \times 10^3 \times 0{,}05 \times 10^{-6}}$$
+$$V^+ = \frac{V_{co}}{2} = 3{,}0 \text{ V}$$
 
-$$f = \frac{6}{2{,}87 \times 5 \times 10^{-3}} = \frac{6}{0{,}01435} = \mathbf{418 \; Hz}$$
+$$I_{carga} = \frac{6 - 3}{100k} = 30 \ \mu\text{A}$$
 
-### 5.3 Tabela de comparação — Frequência
+$$I_{descarga} = \left|\frac{3}{50k} - 30\mu\right| = |60\mu - 30\mu| = 30 \ \mu\text{A}$$
 
-| Grandeza           | Valor Teórico | Valor Simulado (Proteus) | Desvio (%) |
-|--------------------|:-------------:|:------------------------:|:----------:|
-| Frequência (f)     | 418 Hz        | _____                    | _____      |
-| Período (T)        | 2,39 ms       | _____                    | _____      |
-| Tempo de subida    | ≈ 2,39 ms     | _____                    | _____      |
-| Tempo de reset     | ≈ desprezível | _____                    | _____      |
+Como $I_{carga} = I_{descarga} = 30\ \mu A$, a onda é **triangular simétrica**:
 
----
+$$T_{carga} = T_{descarga} = \frac{2{,}87 \times 0{,}05\mu}{30\mu} = 4{,}78 \text{ ms}$$
 
-## 6. Formas de Onda Teóricas
+$$T = 4{,}78 + 4{,}78 = 9{,}57 \text{ ms} \quad \Rightarrow \quad f = 104{,}5 \text{ Hz}$$
 
-O gráfico abaixo mostra as formas de onda calculadas teoricamente para Vco = 6 V:
+### 5.3 Formas de onda teóricas
 
-> 📷 **[INSERIR AQUI: formas_de_onda_teorico.png — gerado pelo script Python]**
+![Formas de onda — Modelo teórico](imgs/geradas/formas_onda_modelo_teorico.png)
 
-**Parâmetros das formas de onda:**
+### 5.4 Formas de onda simuladas
 
-| Saída   | Forma     | Amplitude          | Frequência | Observação               |
-|---------|-----------|--------------------|------------|--------------------------|
-| Saída 1 | Quadrada  | 0 V → 8,5 V        | 418 Hz     | Pulso estreito de reset  |
-| Saída 2 | Rampa/tri | 1,66 V → 4,53 V    | 418 Hz     | Subida linear, queda abrupta |
+![Osciloscópio — Saída 1 e Saída 2, Vco = 6 V](imgs/simulacao/q1_osciloscopio_saidas12.png)
 
----
+*Canal azul: Saída 1 (onda quadrada). Canal amarelo: Saída 2 (rampa). T = 9,96 ms.*
 
-## 7. Influência de Vco na Frequência
+### 5.5 Comparação — Frequência e Período
 
-Substituindo na equação de frequência:
+| Grandeza | Teórico | Simulado | Montagem | Desvio T×S |
+|----------|:-------:|:--------:|:--------:|:----------:|
+| T_carga | 4,78 ms | ≈ 4,98 ms | ___ | +4,2% |
+| T_descarga | 4,78 ms | ≈ 4,98 ms | ___ | +4,2% |
+| T total | 9,57 ms | 9,96 ms | ___ | +4,1% |
+| f | 104,5 Hz | 100,4 Hz | ___ | +4,1% |
 
-$$f(V_{co}) = \frac{V_{co}}{2{,}87 \times 10^{-2}} \quad [\text{Hz}]$$
-
-| Vco (V) | f teórica (Hz) |
-|:-------:|:--------------:|
-| 1       | 70             |
-| 2       | 140            |
-| 3       | 209            |
-| 4       | 279            |
-| 6       | **418**        |
-| 8       | 557            |
-| 10      | 696            |
-
-**Conclusão:** Vco controla linearmente a frequência de oscilação. O circuito funciona como um **VCO linear** (Voltage Controlled Oscillator).
-
-> 📷 **[INSERIR AQUI: Print do Proteus com Vco variando (senóide ou triangular) — Questão 2]**
+> **Sobre o desvio de frequência:** o modelo teórico de carga/descarga simétrica concorda muito bem com o simulado (desvio de apenas +4,1%). O pequeno desvio residual deve-se ao modelo SPICE do LM324 — corrente de bias (~45 nA), tensão de offset (~±7 mV) e tempo de resposta finito do comparador. Os limiares V_TH e V_TL também concordam bem (< 6%), confirmando a validade das equações do Schmitt Trigger.
 
 ---
 
-## 8. Questão 2 — Vco com Sinal Variável
+## 6. Influência de Vco na Frequência
 
-Quando se aplica um sinal variável (senoidal ou triangular) em Vco, a frequência de oscilação acompanha instantaneamente o valor de Vco, produzindo um sinal **modulado em frequência (FM)**.
+Como $V^+ = V_{co}/2$, a corrente de carga $I_{carga} = V_{co}/(2R_1)$ e a corrente de descarga $I_{descarga} = |V_{co}/(2R_7) - V_{co}/(2R_1)|$ escalam **igualmente** com Vco — por isso $T_{carga} = T_{descarga}$ para qualquer valor de Vco, e a onda é sempre triangular simétrica:
 
-- **Vco senoidal →** a frequência da Saída 1 varia de forma senoidal em torno de f₀
-- **Vco triangular →** a frequência da Saída 1 varia linearmente (chirp linear)
+$$f(V_{co}) = \frac{V_{co}}{2 \cdot \Delta V \cdot C_1} \cdot \frac{1}{R_1}$$
 
-Este é o princípio de funcionamento de um **VCO analógico**, amplamente utilizado em PLLs (Phase-Locked Loops) e síntese de frequência.
+| Vco (V) | I_carga = I_desc (µA) | T_carga = T_desc (ms) | f (Hz) |
+|:-------:|:----------------------:|:----------------------:|:------:|
+| 1 | 5 | 28,70 | 17 |
+| 2 | 10 | 14,35 | 35 |
+| 3 | 15 | 9,57 | 52 |
+| 4 | 20 | 7,17 | 70 |
+| 6 | 30 | 4,78 | **105** |
+| 8 | 40 | 3,59 | 139 |
+| 10 | 50 | 2,87 | 174 |
 
-> 📷 **[INSERIR AQUI: Print do Proteus — Vco senoidal + Saída 1 mostrando variação de frequência]**
+O circuito funciona como **VCO (Voltage Controlled Oscillator)** com resposta **linear**: f é diretamente proporcional a Vco, e a forma de onda da Saída 2 permanece triangular simétrica em toda a faixa.
 
 ---
 
-## 9. Resumo dos Resultados
+## 7. Questão 2 — Vco com Sinal Variável
 
-| Parâmetro        | Teórico    | Simulado | Desvio |
-|------------------|:----------:|:--------:|:------:|
-| V_TH             | 4,53 V     |          |        |
-| V_TL             | 1,66 V     |          |        |
-| ΔV (histerese)   | 2,87 V     |          |        |
-| Frequência       | 418 Hz     |          |        |
-| Período          | 2,39 ms    |          |        |
+Quando se aplica um sinal variável em Vco, a corrente de integração $I = V_{co}/(2R_1)$ varia instantaneamente, fazendo a frequência de oscilação acompanhar o sinal:
+
+- **Vco senoidal** → frequência da Saída 1 varia senoidalmente em torno de f₀ — modulação em frequência (FM)
+- **Vco triangular** → frequência varia linearmente no tempo — chirp linear
+
+Este é o princípio de funcionamento de VCOs analógicos em PLLs (Phase-Locked Loops).
+
+> 📷 `[INSERIR: imgs/simulacao/q2_vco_senoidal.png]`
+
+---
+
+## 8. Questão 3 — Circuito Multivibrador TL082 (Figura 2)
+
+### 8.1 Esquemático
+
+> 📷 `[INSERIR: imgs/simulacao/q3_esquematico.png]`
+
+### 8.2 Parâmetros do circuito
+
+| Componente | Valor | Função |
+|------------|-------|--------|
+| U1:A | TL082 | Comparador com realimentação positiva via C1 |
+| U1:B | TL082 | Segundo estágio — saídas A, B, C, D |
+| R1 | 1 kΩ | Controla corrente de carga/descarga de C1 |
+| R4 | 47 kΩ | Aplica Vco à entrada inversora de U1:A |
+| C1 | 2,7 nF | Capacitor de oscilação — determina a frequência |
+| C2 | 100 pF | Speed-up capacitor — acelera comutação |
+| Q1 | BC548 | Chave NPN entre nó de C1 e −12 V |
+| Vcc / Vee | ±12 V | Alimentação bipolar simétrica |
+| Vco | variável | Controla frequência via R4 |
+| Vdc | variável | Referência DC da entrada (+) de U1:B |
+
+### 8.3 Análise de funcionamento
+
+O circuito é um **oscilador de relaxação RC** com alimentação bipolar ±12 V. Diferente da Questão 1, C1 está no caminho de realimentação direta de U1:A — não num integrador separado.
+
+**U1:A** opera como comparador com histerese. A saída comuta entre $\pm V_{sat} \approx \pm 10{,}5$ V (TL082 satura a ~1,5 V do rail).
+
+**C1 (2,7 nF)** no feedback muda instantaneamente a tensão na entrada (−) a cada comutação, forçando a oscilação. O tempo de carga/descarga via R1 determina a frequência.
+
+**Q1 (BC548)** — quando a saída é positiva, Q1 satura e puxa o nó de C1 para −12 V, acelerando a descarga. **C2 (100 pF)** em paralelo com R1 acelera ainda mais as transições (speed-up capacitor).
+
+**Variando Vco (via R4):** desloca o ponto de operação de U1:A, alterando limiares e modificando frequência e duty cycle — comportamento de VCO.
+
+**Variando Vdc:** altera a referência de U1:B, ajustando o offset das saídas A–D sem alterar a frequência de U1:A.
+
+### 8.4 Equação da frequência
+
+Para comparador simétrico (±Vsat) com realimentação RC:
+
+$$f \approx \frac{1}{2 \cdot R_1 \cdot C_1 \cdot \ln(3)}$$
+
+**Cálculo numérico:**
+
+$$f \approx \frac{1}{2 \times 1k \times 2{,}7n \times 1{,}099} = \frac{1}{5{,}93 \ \mu\text{s}} = 168{,}6 \text{ kHz}$$
+
+### 8.5 Formas de onda teóricas
+
+![Formas de onda teóricas — Questão 3](imgs/geradas/formas_de_onda_q3_teorico.png)
+
+### 8.6 Formas de onda simuladas
+
+> 📷 `[INSERIR: imgs/simulacao/q3_osciloscopio.png]`
+
+### 8.7 Comparação — Questão 3
+
+| Grandeza | Teórico | Simulado | Montagem | Desvio T×S |
+|----------|:-------:|:--------:|:--------:|:----------:|
+| f | 168,6 kHz | ___ | ___ | ___ |
+| T | 5,93 µs | ___ | ___ | ___ |
+| Vsat+ (U1:A) | +10,5 V | ___ | ___ | ___ |
+| Vsat− (U1:A) | −10,5 V | ___ | ___ | ___ |
+
+---
+
+## 9. Resumo Geral
+
+| Parâmetro | Questão | Teórico | Simulado | Montagem | Desvio T×S |
+|-----------|:-------:|:-------:|:--------:|:--------:|:----------:|
+| V_TH | 1 | 4,53 V | 4,68 V | ___ | +3,4% |
+| V_TL | 1 | 1,66 V | 1,65 V | ___ | −0,3% |
+| ΔV | 1 | 2,87 V | 3,03 V | ___ | +5,6% |
+| f | 1 | 104,5 Hz | 100,4 Hz | ___ | +4,1% |
+| T | 1 | 9,57 ms | 9,96 ms | ___ | +4,1% |
+| f | 3 | 168,6 kHz | ___ | ___ | ___ |
+| T | 3 | 5,93 µs | ___ | ___ | ___ |
 
 ---
 
 ## 10. Referências
 
-- Datasheet LM324 — Texas Instruments  
-- Datasheet BC547 — Fairchild Semiconductor  
-- SEDRA, A. S.; SMITH, K. C. *Microeletrônica*. 7ª ed. Pearson, 2015.  
-- Simulação realizada no Proteus 8 Professional
+- Datasheet LM324 — Texas Instruments
+- Datasheet TL082 — Texas Instruments
+- Datasheet BC547 / BC548 — Fairchild Semiconductor
+- SEDRA, A. S.; SMITH, K. C. *Microeletrônica*. 7ª ed. Pearson, 2015.
+- Simulação: Proteus 8 Professional
 
 ---
 
-*Documento gerado com auxílio de ferramentas computacionais. Equações em LaTeX, gráficos em Python/Matplotlib.*
+*Equações em LaTeX, gráficos em Python/Matplotlib.*
