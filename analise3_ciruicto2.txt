@@ -1,0 +1,77 @@
+## 8. Questão 3 — Circuito Multivibrador TL082 (Figura 2)
+
+### 8.1 Esquemático
+
+> 📷 `[INSERIR: imgs/simulacao/q3_esquematico.png]`
+
+### 8.2 Parâmetros do circuito
+
+| Componente | Valor | Função |
+|------------|-------|--------|
+| U1:A | TL082 | Comparador com realimentação positiva via C1 |
+| U1:B | TL082 | Segundo estágio — saídas A, B, C, D |
+| R1 | 1 kΩ | Controla corrente de carga/descarga de C1 |
+| R4 | 47 kΩ | Aplica Vco à entrada inversora de U1:A |
+| C1 | 2,7 nF | Capacitor de oscilação — determina a frequência |
+| C2 | 100 pF | Speed-up capacitor — acelera comutação |
+| Q1 | BC548 | Chave NPN entre nó de C1 e −12 V |
+| Vcc / Vee | ±12 V | Alimentação bipolar simétrica |
+| Vco | variável | Controla frequência via R4 |
+| Vdc | variável | Referência DC da entrada (+) de U1:B |
+
+### 8.3 Análise de funcionamento
+
+O circuito é um **oscilador de relaxação RC** com alimentação bipolar ±12 V. Diferente da Questão 1, C1 está no caminho de realimentação direta de U1:A — não num integrador separado.
+
+**U1:A** opera como comparador com histerese. A saída comuta entre $\pm V_{sat} \approx \pm 10{,}5$ V (TL082 satura a ~1,5 V do rail).
+
+**C1 (2,7 nF)** no feedback muda instantaneamente a tensão na entrada (−) a cada comutação, forçando a oscilação. O tempo de carga/descarga via R1 determina a frequência.
+
+**Q1 (BC548)** — quando a saída é positiva, Q1 satura e puxa o nó de C1 para −12 V, acelerando a descarga. **C2 (100 pF)** em paralelo com R1 acelera ainda mais as transições (speed-up capacitor).
+
+**Variando Vco (via R4):** desloca o ponto de operação de U1:A, alterando limiares e modificando frequência e duty cycle — comportamento de VCO.
+
+**Variando Vdc:** altera a referência de U1:B, ajustando o offset das saídas A–D sem alterar a frequência de U1:A.
+
+### 8.4 Equação da frequência
+
+Para comparador simétrico (±Vsat) com realimentação RC:
+
+$$f \approx \frac{1}{2 \cdot R_1 \cdot C_1 \cdot \ln(3)}$$
+
+**Cálculo numérico:**
+
+$$f \approx \frac{1}{2 \times 1k \times 2{,}7n \times 1{,}099} = \frac{1}{5{,}93 \ \mu\text{s}} = 168{,}6 \text{ kHz}$$
+
+### 8.5 Formas de onda teóricas
+
+![Formas de onda teóricas — Questão 3](imgs/geradas/formas_de_onda_q3_teorico.png)
+
+### 8.6 Formas de onda simuladas
+
+> 📷 `[INSERIR: imgs/simulacao/q3_osciloscopio.png]`
+
+### 8.7 Comparação — Questão 3
+
+| Grandeza | Teórico | Simulado | Montagem | Desvio T×S |
+|----------|:-------:|:--------:|:--------:|:----------:|
+| f | 168,6 kHz | ___ | ___ | ___ |
+| T | 5,93 µs | ___ | ___ | ___ |
+| Vsat+ (U1:A) | +10,5 V | ___ | ___ | ___ |
+| Vsat− (U1:A) | −10,5 V | ___ | ___ | ___ |
+
+---
+
+## 9. Resumo Geral
+
+| Parâmetro | Questão | Teórico | Simulado | Montagem | Desvio T×S |
+|-----------|:-------:|:-------:|:--------:|:--------:|:----------:|
+| V_TH | 1 | 4,53 V | 4,68 V | ___ | +3,4% |
+| V_TL | 1 | 1,66 V | 1,65 V | ___ | −0,3% |
+| ΔV | 1 | 2,87 V | 3,03 V | ___ | +5,6% |
+| f | 1 | 104,5 Hz | 100,4 Hz | ___ | +4,1% |
+| T | 1 | 9,57 ms | 9,96 ms | ___ | +4,1% |
+| f | 3 | 168,6 kHz | ___ | ___ | ___ |
+| T | 3 | 5,93 µs | ___ | ___ | ___ |
+
+---
