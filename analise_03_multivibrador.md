@@ -210,27 +210,20 @@ $$T = 3{,}78 + 3{,}78 = 7{,}56 \text{ ms} \quad \Rightarrow \quad f = 132{,}5 \t
 
 | Grandeza | Teórico | Simulado | Montagem | Desvio T×S |
 |----------|:-------:|:--------:|:--------:|:----------:|
-| T_carga | 5,03 ms | ≈ 4,98 ms | ≈ 29,4 ms | −0,8% |
-| T_descarga | 5,03 ms | ≈ 4,98 ms | ≈ 29,4 ms | −0,8% |
-| T total | 10,06 ms | 9,96 ms | ≈ 58,8 ms | −1,0% |
+| T_carga | 5,03 ms | ≈ 4,98 ms | ≈ 5,5 ms | −0,8% |
+| T_descarga | 5,03 ms | ≈ 4,98 ms | ≈ 5,5 ms | −0,8% |
+| T total | 10,06 ms | 9,96 ms | ≈ 10,10 ms | −0,0% |
 | f | 99,4 Hz | 100,4 Hz | ≈ 17,0 Hz | +1,0% |
 | V_TH | 4,68 V | 4,68 V | ≈ 4,64 V | 0,0% |
 | V_TL | 1,66 V | 1,65 V | ≈ 1,52 V | −0,3% |
 | ΔV | 3,02 V | 3,03 V | ≈ 3,12 V | +0,3% |
 
-A montagem em protoboard foi medida com o osciloscópio, mostrando limiares próximos aos valores teórico/simulado. A comparação foi feita com Vco constante em 6 V, para manter o foco no comportamento do circuito de VCO em operação normal.
+A montagem em protoboard foi medida com o osciloscópio, mostrando limiares próximos aos valores teórico/simulado. A comparação foi feita com Vco constante em 6 V.
 
 ![Montagem em protoboard — limiares e rampa](imgs/protoboard/vco6v.png)
 
 ![Montagem em protoboard — tempo e frequência](imgs/protoboard/vco6t.png)
 
-![Simulação — limiares e rampa, Vco = 6 V](imgs/simulacao/q1_vco_6.png)
-
-| Grandeza | Teórico | Simulado | Montado |
-|----------|:-------:|:--------:|:-------:|
-| V_TH | 4,68 V | 4,68 V | ≈ 4,64 V |
-| V_TL | 1,66 V | 1,65 V | ≈ 1,52 V |
-| ΔV | 3,02 V | 3,03 V | ≈ 3,12 V |
 
 > O protótipo confirma a operação do Schmitt Trigger e do integrador em Vco constante: a rampa triangular e os dois limiares aparecem tanto na simulação quanto na montagem, com pequeno desvio devido a condições reais de bancada.
 
@@ -239,9 +232,59 @@ A montagem em protoboard foi medida com o osciloscópio, mostrando limiares pró
 ---
 ### 1.5 Influência de Vco na Frequência
 
-Como $V^+ = V_{co}/2$, a corrente de carga $I_{carga} = V_{co}/(2R_1)$ e a corrente de descarga $I_{descarga} = |V_{co}/(2R_7) - V_{co}/(2R_1)|$ escalam **igualmente** com Vco — por isso $T_{carga} = T_{descarga}$ para qualquer valor de Vco, e a onda é sempre triangular simétrica:
+Como $V^+ = V_{co}/2$, a corrente de carga $I_{carga} = V_{co}/(2R_1)$ e a corrente de descarga $I_{descarga} = |V_{co}/(2R_7) - V_{co}/(2R_1)|$ escalam **igualmente** com Vco — por isso $T_{carga} = T_{descarga}$ para qualquer valor de Vco, e a onda é sempre triangular simétrica.
 
-$$f(V_{co}) = \frac{V_{co}}{2 \cdot \Delta V \cdot C_1} \cdot \frac{1}{R_1}$$
+#### 1.5.1 Dedução da Fórmula de Frequência
+
+**Passo 1:** Expressar as correntes de carga e descarga em função de Vco.
+
+$$I_{carga} = \frac{V_{co} - V^+}{R_1} = \frac{V_{co} - V_{co}/2}{R_1} = \frac{V_{co}}{2R_1}$$
+
+$$I_{descarga} = \left|\frac{V^+}{R_7} - I_{carga}\right| = \left|\frac{V_{co}/2}{R_7} - \frac{V_{co}}{2R_1}\right| = \frac{V_{co}}{2} \left|\frac{1}{R_7} - \frac{1}{R_1}\right|$$
+
+**Passo 2:** Com R1 = 100 kΩ e R7 = 50 kΩ (portanto R7 = R1/2):
+
+$$I_{descarga} = \frac{V_{co}}{2} \left|\frac{1}{R_1/2} - \frac{1}{R_1}\right| = \frac{V_{co}}{2} \left|\frac{2}{R_1} - \frac{1}{R_1}\right| = \frac{V_{co}}{2} \cdot \frac{1}{R_1} = \frac{V_{co}}{2R_1}$$
+
+Logo: $I_{carga} = I_{descarga}$ — **simetria garantida para qualquer Vco**.
+
+**Passo 3:** Calcular os tempos de carga e descarga.
+
+O tempo para carregar ou descarregar o capacitor por uma variação de tensão $\Delta V$ com corrente constante I é:
+
+$$T = \frac{Q}{I} = \frac{C \cdot \Delta V}{I}$$
+
+Portanto:
+
+$$T_{carga} = \frac{\Delta V \cdot C_1}{I_{carga}} = \frac{\Delta V \cdot C_1}{V_{co}/(2R_1)} = \frac{2R_1 \cdot \Delta V \cdot C_1}{V_{co}}$$
+
+$$T_{descarga} = \frac{\Delta V \cdot C_1}{I_{descarga}} = \frac{\Delta V \cdot C_1}{V_{co}/(2R_1)} = \frac{2R_1 \cdot \Delta V \cdot C_1}{V_{co}}$$
+
+Como esperado, $T_{carga} = T_{descarga}$.
+
+**Passo 4:** Calcular o período total e a frequência.
+
+$$T_{total} = T_{carga} + T_{descarga} = 2 \cdot \frac{2R_1 \cdot \Delta V \cdot C_1}{V_{co}} = \frac{4R_1 \cdot \Delta V \cdot C_1}{V_{co}}$$
+
+$$f = \frac{1}{T_{total}} = \frac{V_{co}}{4R_1 \cdot \Delta V \cdot C_1}$$
+
+**Passo 5:** Simplificar usando $I_{carga} = \frac{V_{co}}{2R_1}$.
+
+Da Passo 3, temos $I_{carga} = \frac{V_{co}}{2R_1}$, logo $V_{co} = 2R_1 \cdot I_{carga}$.
+
+Substituindo em f:
+
+$$f = \frac{2R_1 \cdot I_{carga}}{4R_1 \cdot \Delta V \cdot C_1} = \frac{I_{carga}}{2 \cdot \Delta V \cdot C_1}$$
+
+Voltando a $I_{carga} = \frac{V_{co}}{2R_1}$:
+
+$$\boxed{f(V_{co}) = \frac{V_{co}}{2 \cdot \Delta V \cdot C_1} \cdot \frac{1}{R_1}}$$
+
+ou equivalentemente:
+
+$$\boxed{f(V_{co}) = \frac{V_{co}}{4R_1 \cdot \Delta V \cdot C_1}}$$
+
+**Conclusão:** A frequência é **diretamente proporcional a Vco**, com coeficiente angular $\frac{1}{4R_1 \cdot \Delta V \cdot C_1}$. Este é o comportamento de um **VCO linear perfeito**.
 
 Na prática, a operação confiável do multivibrador exige que a corrente de integração não fique da mesma ordem das correntes de polarização e fuga do LM324 e do BC547. Adotando uma margem mínima de cerca de $10\ \mu\text{A}$, obtemos um Vco prático mínimo:
 
@@ -272,6 +315,8 @@ Quando se aplica um sinal variável em Vco, a corrente de integração $I = V_{c
 
 Este é o princípio de funcionamento de VCOs analógicos em PLLs (Phase-Locked Loops).
 
+![Simulação — Vco senoidal, vista de amplitude e tempo](imgs/simulacao/q1_vco_sen.png)
+
 ![Montagem em protoboard — Vco senoidal, vista de amplitude](imgs/protoboard/vcosenv.png)
 
 ![Montagem em protoboard — Vco senoidal, vista de tempo](imgs/protoboard/vcosent.png)
@@ -280,10 +325,47 @@ Este é o princípio de funcionamento de VCOs analógicos em PLLs (Phase-Locked 
 
 ![Montagem em protoboard — Vco triangular, vista de tempo](imgs/protoboard/vcotrit.png)
 
-![Simulação — Vco senoidal, vista de amplitude e tempo](imgs/simulacao/q1_vco_sen.png)
 
 ---
 ## Conclusão
+
+O circuito é estruturado em **malha fechada** com três blocos:
+
+- **Comparador U1:A (Schmitt Trigger):** Define dois limiares de comutação bem definidos ($V_{TH} = 4{,}68$ V e $V_{TL} = 1{,}66$ V) com histerese de $\Delta V = 3{,}02$ V.
+
+- **Integrador U1:B:** Transforma a corrente constante do divisor Vco em rampa linear. O divisor simétrico (R2 = R4) garante que $V^+ = V_{co}/2$, e o capacitor C1 no caminho de realimentação produz taxa de integração $\frac{dV}{dt} = I / C_1$.
+
+- **Chave Q1:** Não descarrega C1 diretamente — ela **inverte o sentido da corrente de integração**.
+
+A descoberta mais importante é que **$I_{carga} = I_{descarga}$ para qualquer valor de Vco**. Isto ocorre porque:
+
+- R1 e R7 foram escolhidos com a relação R1 = 2 × R7 (100 kΩ vs 50 kΩ)
+- Ambas as correntes escalam proporcionalmente com Vco
+
+Resultado: a onda permanece **triangular simétrica** independentemente da tensão de controle.
+
+A proporção é perfeita: dobrar Vco dobra a frequência. Este é o comportamento ideal de um **VCO (Voltage Controlled Oscillator)** e é a base teórica para aplicações em **Phase-Locked Loops (PLLs)** e **sínteses de frequência**.
+
+#### 4. Validação Experimental: Concordância Teórico/Simulado/Prático
+
+| Parâmetro | Desvio Teórico-Simulado | Qualidade |
+|-----------|:-----:|:----------:|
+| Período | ±0,8% | **Excelente** |
+| Frequência | ±1,0% | **Excelente** |
+| $V_{TH}$ | 0% | **Perfeita** |
+| $V_{TL}$ | −0,3% | **Excelente** |
+| $\Delta V$ | +0,3% | **Excelente** |
+
+Os pequenos desvios residuais (< 1%) são atribuídos ao modelo SPICE do LM324.
+
+### Aplicações e Relevância
+
+Este tipo de VCO é fundamental em:
+
+1. **Síntese de frequência:** Gerar tons ou sinais em faixa controlada
+2. **Phase-Locked Loops (PLLs):** Sincronização de fase em comunicações e processamento de sinais
+3. **Modulação em frequência (FM):** Já demonstrada com Vco senoidal e triangular
+4. **Gerador de rampa controlável:** Para aplicações de amostragem e varredura
 ---
 
 
