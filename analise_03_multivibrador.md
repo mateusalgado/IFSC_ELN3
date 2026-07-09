@@ -156,6 +156,20 @@ $$T_{carga} = \frac{\Delta V \cdot C_1}{I_{carga}} \qquad T_{descarga} = \frac{\
 
 $$f = \frac{1}{T_{carga} + T_{descarga}}$$
 
+#### Cálculo numérico (Vco = 1 V)
+
+$$V^+ = \frac{V_{co}}{2} = 0{,}5 \text{ V}$$
+
+$$I_{carga} = \frac{1 - 0{,}5}{100k} = 5 \ \mu\text{A}$$
+
+$$I_{descarga} = \left|\frac{0{,}5}{50k} - 5\mu\right| = |10\mu - 5\mu| = 5 \ \mu\text{A}$$
+
+Como $I_{carga} = I_{descarga} = 5\ \mu A$, a onda teórica é **triangular simétrica**:
+
+$$T_{carga} = T_{descarga} = \frac{3{,}02 \times 0{,}05\mu}{5\mu} = 30{,}2 \text{ ms}$$
+
+$$T = 30{,}2 + 30{,}2 = 60{,}4 \text{ ms} \quad \Rightarrow \quad f = 16{,}6 \text{ Hz}$$
+
 #### Cálculo numérico (Vco = 6 V)
 
 $$V^+ = \frac{V_{co}}{2} = 3{,}0 \text{ V}$$
@@ -172,39 +186,14 @@ $$T = 5{,}03 + 5{,}03 = 10{,}06 \text{ ms} \quad \Rightarrow \quad f = 99{,}4 \t
 
 ![Osciloscópio — Saída 1 e Saída 2, Vco = 8 V](imgs/simulacao/q1_vco_6.png)
 
-#### Cálculo numérico (Vco = 1 V)
+A montagem em protoboard foi medida com o osciloscópio, mostrando limiares próximos aos valores teórico/simulado. A comparação foi feita com Vco constante em 6 V.
 
-$$V^+ = \frac{V_{co}}{2} = 0{,}5 \text{ V}$$
+![Montagem em protoboard — limiares e rampa](imgs/protoboard/vco6v.png)
 
-$$I_{carga} = \frac{1 - 0{,}5}{100k} = 5 \ \mu\text{A}$$
-
-$$I_{descarga} = \left|\frac{0{,}5}{50k} - 5\mu\right| = |10\mu - 5\mu| = 5 \ \mu\text{A}$$
-
-Como $I_{carga} = I_{descarga} = 5\ \mu A$, a onda teórica é **triangular simétrica**:
-
-$$T_{carga} = T_{descarga} = \frac{3{,}02 \times 0{,}05\mu}{5\mu} = 30{,}2 \text{ ms}$$
-
-$$T = 30{,}2 + 30{,}2 = 60{,}4 \text{ ms} \quad \Rightarrow \quad f = 16{,}6 \text{ Hz}$$
-
-#### Cálculo numérico (Vco = 8 V)
-
-$$V^+ = \frac{V_{co}}{2} = 4{,}0 \text{ V}$$
-
-$$I_{carga} = \frac{8 - 4}{100k} = 40 \ \mu\text{A}$$
-
-$$I_{descarga} = \left|\frac{4}{50k} - 40\mu\right| = |80\mu - 40\mu| = 40 \ \mu\text{A}$$
-
-Como $I_{carga} = I_{descarga} = 40\ \mu A$, a onda é **triangular simétrica**:
-
-$$T_{carga} = T_{descarga} = \frac{3{,}02 \times 0{,}05\mu}{40\mu} = 3{,}78 \text{ ms}$$
-
-$$T = 3{,}78 + 3{,}78 = 7{,}56 \text{ ms} \quad \Rightarrow \quad f = 132{,}5 \text{ Hz}$$
+![Montagem em protoboard — tempo e frequência](imgs/protoboard/vco6t.png)
 
 
-![Osciloscópio — Saída 1 e Saída 2, Vco = 8 V](imgs/simulacao/q1_vco_8.png)
-
-*Canal azul: Saída 1 (onda quadrada). Canal amarelo: Saída 2 (rampa). T = 7,47 ms.*
-
+> O protótipo confirma a operação do Schmitt Trigger e do integrador em Vco constante: a rampa triangular e os dois limiares aparecem tanto na simulação quanto na montagem, com pequeno desvio devido a condições reais de bancada.
 
 ####  Comparação — Frequência, Período e Limiar
 
@@ -218,73 +207,81 @@ $$T = 3{,}78 + 3{,}78 = 7{,}56 \text{ ms} \quad \Rightarrow \quad f = 132{,}5 \t
 | V_TL | 1,66 V | 1,65 V | ≈ 1,52 V | −0,3% |
 | ΔV | 3,02 V | 3,03 V | ≈ 3,12 V | +0,3% |
 
-A montagem em protoboard foi medida com o osciloscópio, mostrando limiares próximos aos valores teórico/simulado. A comparação foi feita com Vco constante em 6 V.
 
-![Montagem em protoboard — limiares e rampa](imgs/protoboard/vco6v.png)
-
-![Montagem em protoboard — tempo e frequência](imgs/protoboard/vco6t.png)
-
-
-> O protótipo confirma a operação do Schmitt Trigger e do integrador em Vco constante: a rampa triangular e os dois limiares aparecem tanto na simulação quanto na montagem, com pequeno desvio devido a condições reais de bancada.
 
 > **Sobre o desvio de frequência:** o modelo teórico de carga/descarga simétrica concorda excelentemente com o simulado (desvio de apenas ±0,8%). O pequeno desvio residual deve-se ao modelo SPICE do LM324 — corrente de bias (~45 nA), tensão de offset (~±7 mV) e tempo de resposta finito do comparador. Os limiares V_TH e V_TL também concordam excelentemente (< 1%), confirmando a validade das equações do Schmitt Trigger.
 
 ---
 ### 1.5 Influência de Vco na Frequência
 
-Como $V^+ = V_{co}/2$, a corrente de carga $I_{carga} = V_{co}/(2R_1)$ e a corrente de descarga $I_{descarga} = |V_{co}/(2R_7) - V_{co}/(2R_1)|$ escalam **igualmente** com Vco — por isso $T_{carga} = T_{descarga}$ para qualquer valor de Vco, e a onda é sempre triangular simétrica.
+A expressão de frequência deve ser feita com os nomes dos componentes que determinam cada termo: o resistor de carga $R_1$, o resistor de descarga $R_7$, o capacitor de integração $C_1$ e a faixa de comutação do Schmitt Trigger $\Delta V = V_{TH} - V_{TL}$.
+
+A tensão no nó positivo do integrador é fixada pelo divisor resistivo formado por $R_2$ e $R_4$:
+
+$$V^+ = V_{co} \cdot \frac{R_2}{R_2 + R_4}$$
+
+No nosso circuito, $R_2 = R_4$, logo $V^+ = V_{co}/2$.
 
 #### 1.5.1 Dedução da Fórmula de Frequência
 
-**Passo 1:** Expressar as correntes de carga e descarga em função de Vco.
+**Passo 1:** Corrente de carga do capacitor $C_1$.
+
+Quando Q1 está cortado, o nó $V^-$ do integrador está em curto virtual com $V^+$, e a corrente que sai de $V_{co}$ por $R_1$ integra no capacitor:
 
 $$I_{carga} = \frac{V_{co} - V^+}{R_1} = \frac{V_{co} - V_{co}/2}{R_1} = \frac{V_{co}}{2R_1}$$
 
-$$I_{descarga} = \left|\frac{V^+}{R_7} - I_{carga}\right| = \left|\frac{V_{co}/2}{R_7} - \frac{V_{co}}{2R_1}\right| = \frac{V_{co}}{2} \left|\frac{1}{R_7} - \frac{1}{R_1}\right|$$
+**Passo 2:** Corrente de descarga do capacitor $C_1$.
 
-**Passo 2:** Com R1 = 100 kΩ e R7 = 50 kΩ (portanto R7 = R1/2):
+Quando Q1 está saturado, a corrente de descarga no nó $V^-$ é dada pela diferença entre a corrente em $R_7$ e a corrente de carga que ainda entra por $R_1$:
 
-$$I_{descarga} = \frac{V_{co}}{2} \left|\frac{1}{R_1/2} - \frac{1}{R_1}\right| = \frac{V_{co}}{2} \left|\frac{2}{R_1} - \frac{1}{R_1}\right| = \frac{V_{co}}{2} \cdot \frac{1}{R_1} = \frac{V_{co}}{2R_1}$$
+$$I_{descarga} = \left|\frac{V^+}{R_7} - I_{carga}\right| = \left|\frac{V_{co}/2}{R_7} - \frac{V_{co}}{2R_1}\right|$$
 
-Logo: $I_{carga} = I_{descarga}$ — **simetria garantida para qualquer Vco**.
+Esta expressão deixa claro quais componentes influenciam a descarga: $R_7$ controla a retirada de corrente do nó do integrador, enquanto $R_1$ continua fornecendo corrente de carga.
 
-**Passo 3:** Calcular os tempos de carga e descarga.
+**Passo 3:** Caso específico do circuito.
 
-O tempo para carregar ou descarregar o capacitor por uma variação de tensão $\Delta V$ com corrente constante I é:
+Com $R_1 = 100\ \text{k}\Omega$ e $R_7 = 50\ \text{k}\Omega$, temos:
 
-$$T = \frac{Q}{I} = \frac{C \cdot \Delta V}{I}$$
+$$I_{descarga} = \frac{V_{co}}{2} \left| \frac{1}{R_7} - \frac{1}{R_1} \right| = \frac{V_{co}}{2} \left| \frac{1}{50\text{k}} - \frac{1}{100\text{k}} \right| = \frac{V_{co}}{2R_1}$$
 
-Portanto:
+Portanto, neste projeto específico, as correntes de carga e descarga coincidem numericamente, mas isso é consequência direta da escolha de $R_1$ e $R_7$.
 
-$$T_{carga} = \frac{\Delta V \cdot C_1}{I_{carga}} = \frac{\Delta V \cdot C_1}{V_{co}/(2R_1)} = \frac{2R_1 \cdot \Delta V \cdot C_1}{V_{co}}$$
+**Passo 4:** Tempo de variação do capacitor.
 
-$$T_{descarga} = \frac{\Delta V \cdot C_1}{I_{descarga}} = \frac{\Delta V \cdot C_1}{V_{co}/(2R_1)} = \frac{2R_1 \cdot \Delta V \cdot C_1}{V_{co}}$$
+A variação de tensão $\Delta V$ sobre $C_1$ entre os limiares do Schmitt Trigger define os tempos de carga e descarga:
 
-Como esperado, $T_{carga} = T_{descarga}$.
+$$T_{carga} = \frac{\Delta V \cdot C_1}{I_{carga}} = \frac{\Delta V \cdot C_1}{V_{co}/(2R_1)} = \frac{2 R_1 \cdot \Delta V \cdot C_1}{V_{co}}$$
 
-**Passo 4:** Calcular o período total e a frequência.
+$$T_{descarga} = \frac{\Delta V \cdot C_1}{I_{descarga}} = \frac{\Delta V \cdot C_1}{\left|\dfrac{V_{co}/2}{R_7} - \dfrac{V_{co}}{2R_1}\right|}$$
 
-$$T_{total} = T_{carga} + T_{descarga} = 2 \cdot \frac{2R_1 \cdot \Delta V \cdot C_1}{V_{co}} = \frac{4R_1 \cdot \Delta V \cdot C_1}{V_{co}}$$
+Estas expressões mostram claramente a dependência de $T_{carga}$ em $R_1$, $C_1$ e $\Delta V$, e a dependência de $T_{descarga}$ em $R_7$, $R_1$, $C_1$ e $\Delta V$.
 
-$$f = \frac{1}{T_{total}} = \frac{V_{co}}{4R_1 \cdot \Delta V \cdot C_1}$$
+**Passo 5:** Período e frequência do oscilador.
 
-**Passo 5:** Simplificar usando $I_{carga} = \frac{V_{co}}{2R_1}$.
+O período total é a soma dos tempos de carga e descarga:
 
-Da Passo 3, temos $I_{carga} = \frac{V_{co}}{2R_1}$, logo $V_{co} = 2R_1 \cdot I_{carga}$.
+$$T = T_{carga} + T_{descarga} = \frac{2 R_1 \cdot \Delta V \cdot C_1}{V_{co}} + \frac{\Delta V \cdot C_1}{\left|\dfrac{V_{co}/2}{R_7} - \dfrac{V_{co}}{2R_1}\right|}$$
 
-Substituindo em f:
+$$f = \frac{1}{T} = \frac{1}{\dfrac{2 R_1 \cdot \Delta V \cdot C_1}{V_{co}} + \dfrac{\Delta V \cdot C_1}{\left|\dfrac{V_{co}/2}{R_7} - \dfrac{V_{co}}{2R_1} \right|}}$$
 
-$$f = \frac{2R_1 \cdot I_{carga}}{4R_1 \cdot \Delta V \cdot C_1} = \frac{I_{carga}}{2 \cdot \Delta V \cdot C_1}$$
+Esta é a fórmula geral de frequência em função dos componentes do circuito: $R_1$, $R_7$, $C_1$ e $\Delta V$, além de $V_{co}$ e da divisão $V^+ = V_{co} R_2/(R_2+R_4)$.
 
-Voltando a $I_{carga} = \frac{V_{co}}{2R_1}$:
+**Passo 6:** Fórmula final para este projeto.
 
-$$\boxed{f(V_{co}) = \frac{V_{co}}{2 \cdot \Delta V \cdot C_1} \cdot \frac{1}{R_1}}$$
+Com $R_2 = R_4$ e $R_7 = R_1/2$, o termo de descarga simplifica e o período total fica:
 
-ou equivalentemente:
+$$T = \frac{4 R_1 \cdot \Delta V \cdot C_1}{V_{co}}$$
 
-$$\boxed{f(V_{co}) = \frac{V_{co}}{4R_1 \cdot \Delta V \cdot C_1}}$$
+$$\boxed{f(V_{co}) = \frac{V_{co}}{4\,R_1\,\Delta V\,C_1}}$$
 
-**Conclusão:** A frequência é **diretamente proporcional a Vco**, com coeficiente angular $\frac{1}{4R_1 \cdot \Delta V \cdot C_1}$. Este é o comportamento de um **VCO linear perfeito**.
+Nesta forma final, cada elemento está identificado:
+
+- $R_1$: resistor de entrada que define $I_{carga}$
+- $R_7$: resistor de descarga que define $I_{descarga}$
+- $C_1$: capacitor de integração que determina a constante de tempo
+- $\Delta V$: faixa de trabalho do Schmitt Trigger, definida por $R_3$, $R_6$ e $V_2$
+
+**Conclusão:** A frequência do VCO é diretamente proporcional a $V_{co}$ e inversamente proporcional a $R_1$, $C_1$ e $\Delta V$. A igualdade numérica entre $I_{carga}$ e $I_{descarga}$ só aparece porque o projeto usa $R_7 = R_1/2$; se o valor de $R_7$ fosse diferente, a expressão geral de $T_{descarga}$ e, portanto, de $f$, teria dependência explícita em $R_7$.
 
 Na prática, a operação confiável do multivibrador exige que a corrente de integração não fique da mesma ordem das correntes de polarização e fuga do LM324 e do BC547. Adotando uma margem mínima de cerca de $10\ \mu\text{A}$, obtemos um Vco prático mínimo:
 
