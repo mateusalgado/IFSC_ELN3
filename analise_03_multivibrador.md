@@ -103,6 +103,7 @@ $$I = \frac{V_{co} - V^+}{R_1} = \frac{6 - 3}{100k} = 30 \ \mu\text{A}$$
 Essa corrente constante em C1 produz rampa linear com inclinação:
 
 $$\frac{dV_{out}}{dt} = \frac{I}{C_1} = \frac{30 \ \mu}{0{,}05 \ \mu} = 600 \text{ V/s} = 0{,}6 \text{ V/ms}$$
+
 ---
 
 
@@ -212,6 +213,7 @@ A montagem em protoboard foi medida com o osciloscópio, mostrando limiares pró
 > **Sobre o desvio de frequência:** o modelo teórico de carga/descarga simétrica concorda excelentemente com o simulado (desvio de apenas ±0,8%). O pequeno desvio residual deve-se ao modelo SPICE do LM324 — corrente de bias (~45 nA), tensão de offset (~±7 mV) e tempo de resposta finito do comparador. Os limiares V_TH e V_TL também concordam excelentemente (< 1%), confirmando a validade das equações do Schmitt Trigger.
 
 ---
+
 ### 1.5 Influência de Vco na Frequência
 
 A expressão de frequência deve ser feita com os nomes dos componentes que determinam cada termo: o resistor de carga $R_1$, o resistor de descarga $R_7$, o capacitor de integração $C_1$ e a faixa de comutação do Schmitt Trigger $\Delta V = V_{TH} - V_{TL}$.
@@ -324,6 +326,7 @@ Este é o princípio de funcionamento de VCOs analógicos em PLLs (Phase-Locked 
 
 
 ---
+
 ## Conclusão
 
 O circuito é estruturado em **malha fechada** com três blocos:
@@ -363,6 +366,7 @@ Este tipo de VCO é fundamental em:
 2. **Phase-Locked Loops (PLLs):** Sincronização de fase em comunicações e processamento de sinais
 3. **Modulação em frequência (FM):** Já demonstrada com Vco senoidal e triangular
 4. **Gerador de rampa controlável:** Para aplicações de amostragem e varredura
+
 ---
 
 
