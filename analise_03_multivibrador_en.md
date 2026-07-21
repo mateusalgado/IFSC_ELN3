@@ -188,9 +188,9 @@ $$T = 5.03 + 5.03 = 10.06 \text{ ms} \quad \Rightarrow \quad f = 99.4 \text{ Hz}
 
 The breadboard assembly was measured with the oscilloscope, showing thresholds close to the theoretical/simulated values. The comparison was made with Vco held constant at 6 V.
 
-![Breadboard assembly — thresholds and ramp](imgs/protoboard/vco6v.png)
+![Breadboard assembly — thresholds and ramp](imgs/protoboard/vco6v.jpg)
 
-![Breadboard assembly — time and frequency](imgs/protoboard/vco6t.png)
+![Breadboard assembly — time and frequency](imgs/protoboard/vco6t.jpg)
 
 
 > The prototype confirms the operation of the Schmitt Trigger and the integrator at constant Vco: the triangular ramp and the two thresholds appear both in the simulation and in the assembly, with a small deviation due to real bench conditions.
@@ -315,13 +315,13 @@ This is the operating principle of analog VCOs in PLLs (Phase-Locked Loops).
 
 ![Simulation — Sinusoidal Vco, amplitude and time views](imgs/simulacao/q1_vco_sen.png)
 
-![Breadboard assembly — Sinusoidal Vco, amplitude view](imgs/protoboard/vcosenv.png)
+![Breadboard assembly — Sinusoidal Vco, amplitude view](imgs/protoboard/vcosenv.jpg)
 
-![Breadboard assembly — Sinusoidal Vco, time view](imgs/protoboard/vcosent.png)
+![Breadboard assembly — Sinusoidal Vco, time view](imgs/protoboard/vcosent.jpg)
 
-![Breadboard assembly — Triangular Vco, amplitude view](imgs/protoboard/vcotriv.png)
+![Breadboard assembly — Triangular Vco, amplitude view](imgs/protoboard/vcotriv.jpg)
 
-![Breadboard assembly — Triangular Vco, time view](imgs/protoboard/vcotrit.png)
+![Breadboard assembly — Triangular Vco, time view](imgs/protoboard/vcotrit.jpg)
 
 
 ---

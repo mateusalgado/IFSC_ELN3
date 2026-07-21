@@ -189,9 +189,9 @@ $$T = 5{,}03 + 5{,}03 = 10{,}06 \text{ ms} \quad \Rightarrow \quad f = 99{,}4 \t
 
 A montagem em protoboard foi medida com o osciloscópio, mostrando limiares próximos aos valores teórico/simulado. A comparação foi feita com Vco constante em 6 V.
 
-![Montagem em protoboard — limiares e rampa](imgs/protoboard/vco6v.png)
+![Montagem em protoboard — limiares e rampa](imgs/protoboard/vco6v.jpg)
 
-![Montagem em protoboard — tempo e frequência](imgs/protoboard/vco6t.png)
+![Montagem em protoboard — tempo e frequência](imgs/protoboard/vco6t.jpg)
 
 
 > O protótipo confirma a operação do Schmitt Trigger e do integrador em Vco constante: a rampa triangular e os dois limiares aparecem tanto na simulação quanto na montagem, com pequeno desvio devido a condições reais de bancada.
@@ -316,13 +316,13 @@ Este é o princípio de funcionamento de VCOs analógicos em PLLs (Phase-Locked 
 
 ![Simulação — Vco senoidal, vista de amplitude e tempo](imgs/simulacao/q1_vco_sen.png)
 
-![Montagem em protoboard — Vco senoidal, vista de amplitude](imgs/protoboard/vcosenv.png)
+![Montagem em protoboard — Vco senoidal, vista de amplitude](imgs/protoboard/vcosenv.jpg)
 
-![Montagem em protoboard — Vco senoidal, vista de tempo](imgs/protoboard/vcosent.png)
+![Montagem em protoboard — Vco senoidal, vista de tempo](imgs/protoboard/vcosent.jpg)
 
-![Montagem em protoboard — Vco triangular, vista de amplitude](imgs/protoboard/vcotriv.png)
+![Montagem em protoboard — Vco triangular, vista de amplitude](imgs/protoboard/vcotriv.jpg)
 
-![Montagem em protoboard — Vco triangular, vista de tempo](imgs/protoboard/vcotrit.png)
+![Montagem em protoboard — Vco triangular, vista de tempo](imgs/protoboard/vcotrit.jpg)
 
 
 ---
